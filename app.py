@@ -333,9 +333,9 @@ class NetCodeSim:
             net.add_edge(u, v, label=f"c={cap}, e={cost}", title=f"capacity={cap}, energy={cost}")
         with tempfile.NamedTemporaryFile(delete=False, suffix=".html") as tmp:
             net.write_html(tmp.name)   # just writes the HTML file
-with open(tmp.name, "r", encoding="utf-8") as f:
-    html = f.read()
-return html
+        with open(tmp.name, "r", encoding="utf-8") as f:
+        html = f.read()
+     return html
 def metrics(self):
         # Throughput (innovative rate) approximation: min rank increase slope across sinks
         per_sink = {}
