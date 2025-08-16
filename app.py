@@ -336,7 +336,7 @@ class NetCodeSim:
 with open(tmp.name, "r", encoding="utf-8") as f:
     html = f.read()
 return html
-    def metrics(self):
+def metrics(self):
         # Throughput (innovative rate) approximation: min rank increase slope across sinks
         per_sink = {}
         for tnode in self.sink_nodes:
