@@ -5,14 +5,7 @@ import json
 import pandas as pd
 from pyvis.network import Network
 import tempfile
--------------------------------
-
-Simulation Class
-
--------------------------------
-
 class NetworkCodingSim: def init(self, num_nodes=6, packets=10, loss_prob=0.1, method="RLNC"): self.num_nodes = num_nodes self.packets = packets self.loss_prob = loss_prob self.method = method self.graph = nx.erdos_renyi_graph(num_nodes, 0.4, seed=42) self.metrics = {}
-
 def run(self):
     sent, received = self.packets, 0
     for _ in range(self.packets):
