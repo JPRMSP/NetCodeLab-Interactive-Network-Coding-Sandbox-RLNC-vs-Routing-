@@ -1,85 +1,81 @@
 import streamlit as st
+import streamlit.components.v1 as components
 from pyvis.network import Network
-import networkx as nx
 import tempfile
-import os
+import json
 
-# ----------------------------
+# ------------------------------
 # Simulation Class
-# ----------------------------
+# ------------------------------
 class Simulation:
-    def __init__(self):
-        self.G = nx.DiGraph()
-        self.metrics_data = {}
+    def __init__(self, method):
+        self.method = method
+        self.packets_sent = 10
+        self.packets_received = 10 if method == "RLNC" else 8
 
-    def add_nodes_and_edges(self):
-        """Example network (you can replace with RLNC logic)."""
-        self.G.add_nodes_from([1, 2, 3, 4])
-        self.G.add_edges_from([(1, 2), (2, 3), (3, 4), (1, 4)])
-
-    def run(self, method="Routing"):
-        """Run either Routing or RLNC (placeholder)."""
-        if method == "Routing":
-            self.metrics_data = {
-                "Method": "Routing",
-                "Packets Sent": 10,
-                "Packets Received": 9,
-                "Loss": "10%"
-            }
-        else:
-            self.metrics_data = {
-                "Method": "RLNC",
-                "Packets Sent": 10,
-                "Packets Received": 10,
-                "Loss": "0%"
-            }
-
-    def pyvis_html(self, height=480):
-        """Render PyVis network and return HTML string."""
-        net = Network(height=f"{height}px", width="100%", directed=True, notebook=False)
-        net.from_nx(self.G)
-
-        with tempfile.NamedTemporaryFile(delete=False, suffix=".html") as tmp:
-            net.show(tmp.name)
-            tmp_path = tmp.name
-
-        with open(tmp_path, "r", encoding="utf-8") as f:
-            html_str = f.read()
-
-        os.remove(tmp_path)  # cleanup
-        return html_str
+    def run(self):
+        # Placeholder: extend with real logic
+        return True
 
     def metrics(self):
-        return self.metrics_data
+        loss = (
+            0
+            if self.packets_sent == self.packets_received
+            else (self.packets_sent - self.packets_received) / self.packets_sent * 100
+        )
+        return {
+            "Method": self.method,
+            "Packets Sent": self.packets_sent,
+            "Packets Received": self.packets_received,
+            "Loss": f"{loss:.0f}%",
+        }
+
+    def pyvis_html(self, height=500):
+        net = Network(height=f"{height}px", width="100%", directed=True, notebook=False)
+
+        # Example network structure
+        net.add_node(1, label="Source")
+        net.add_node(2, label="Relay 1")
+        net.add_node(3, label="Relay 2")
+        net.add_node(4, label="Destination")
+
+        net.add_edge(1, 2)
+        net.add_edge(1, 3)
+        net.add_edge(2, 4)
+        net.add_edge(3, 4)
+
+        with tempfile.NamedTemporaryFile(delete=False, suffix=".html") as tmp:
+            net.save_graph(tmp.name)
+            html_content = open(tmp.name, "r", encoding="utf-8").read()
+        return html_content
 
 
-# ----------------------------
-# Streamlit UI
-# ----------------------------
+# ------------------------------
+# Main Streamlit App
+# ------------------------------
 def main():
-    st.set_page_config(page_title="RLNC vs Routing Sandbox", layout="wide")
+    st.set_page_config(page_title="Interactive Network Coding Sandbox", layout="wide")
+
     st.title("🌐 Interactive Network Coding Sandbox (RLNC vs Routing)")
 
-    sim = Simulation()
-    sim.add_nodes_and_edges()
-
-    # Sidebar controls
     st.sidebar.header("⚙️ Simulation Settings")
     method = st.sidebar.radio("Choose Method", ["Routing", "RLNC"])
-    run_button = st.sidebar.button("Run Simulation")
 
-    if run_button:
-        sim.run(method)
-        st.success(f"Simulation completed using {method}!")
+    if st.sidebar.button("Run Simulation"):
+        sim = Simulation(method)
+        sim.run()
 
-        # Display metrics
+        st.success(f"✅ Simulation completed using {method}!")
+
+        # Show metrics
         st.subheader("📊 Metrics")
-        st.json(sim.metrics())
+        metrics = sim.metrics()
+        st.json(metrics)
 
-        # Display network graph
+        # Show network graph
         st.subheader("🖧 Network Graph")
-        from streamlit.components.v1 import html
-        html(sim.pyvis_html(height=500), height=550)
+        html_code = sim.pyvis_html(height=500)
+        components.html(html_code, height=550, scrolling=True)
 
 
 if __name__ == "__main__":
