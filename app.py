@@ -320,7 +320,7 @@ class NetCodeSim:
     # Visualization helpers
     # -------------------------------
     def pyvis_html(self, height=460):
-        net = Network(height=f"{height}px}", width="100%", directed=True, notebook=False)
+        net = Network(height=f"{height}px)", width="100%", directed=True, notebook=False)
         # Add nodes with color by kind
         for n, attrs in self.G.nodes(data=True):
             kind = attrs.get("kind", "intermediate")
