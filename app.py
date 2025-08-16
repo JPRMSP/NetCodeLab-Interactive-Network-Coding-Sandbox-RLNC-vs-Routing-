@@ -1,5 +1,10 @@
-import streamlit as st import networkx as nx import random import json import pandas as pd from pyvis.network import Network import tempfile
-
+import streamlit as st
+import networkx as nx
+import random
+import json
+import pandas as pd
+from pyvis.network import Network
+import tempfile
 -------------------------------
 
 Simulation Class
